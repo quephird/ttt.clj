@@ -5,4 +5,4 @@
 
 (defn make-new-board []
   (for [x (range 3) y (range 3)]
-    (->Square x y :nobody)))
+    (->Square x y :cross)))

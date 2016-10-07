@@ -3,12 +3,7 @@
             [quil.core :as quil :include-macros true]
             [quil.middleware :as m]
             [ttt.facts :as facts]
-            [ttt.graphics :as graphics]
-            )
-  (:import (ttt.facts Square)))
-
-(rules/defquery find-square [:?x :?y]
-  [?square <- Square (= ?x x) (= ?y y)])
+            [ttt.graphics :as graphics]))
 
 ;; Start game with blank board
 (defn setup []
@@ -16,10 +11,10 @@
   (quil/ellipse-mode :center)
   (quil/no-fill)
   (quil/no-loop)
-  (let [new-session (rules/mk-session 'ttt.facts 'ttt.core)
-        new-board   (facts/make-new-board)]
-    (println new-board)
-    (rules/fire-rules (apply rules/insert new-session new-board))))
+  (let [new-session (rules/mk-session 'ttt.facts 'ttt.graphics)
+        new-board   (facts/make-new-board)
+        session-with-board (apply rules/insert new-session new-board)]
+    session-with-board))
 
 ;; Wait for user input
 
@@ -29,7 +24,6 @@
 
 ;; Draw current board
 (defn draw [state]
-  ; (println state)
   (graphics/board state))
 
 ;; Mouse handlers
