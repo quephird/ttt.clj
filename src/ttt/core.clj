@@ -3,7 +3,8 @@
             [quil.core :as quil :include-macros true]
             [quil.middleware :as m]
             [ttt.facts :as facts]
-            [ttt.graphics :as graphics]))
+            [ttt.graphics :as graphics]
+            [ttt.rules]))
 
 ;; Start game with blank board
 (defn setup []
@@ -11,7 +12,7 @@
   (quil/ellipse-mode :center)
   (quil/no-fill)
   (quil/no-loop)
-  (let [new-session (rules/mk-session 'ttt.facts 'ttt.graphics)
+  (let [new-session (rules/mk-session 'ttt.facts 'ttt.graphics 'ttt.rules)
         new-board   (facts/make-new-board)
         session-with-board (apply rules/insert new-session new-board)]
     session-with-board))
@@ -24,7 +25,14 @@
 
 ;; Draw current board
 (defn draw [state]
-  (graphics/board state))
+  ;; This is not a permanent strategy; it is just to test that new Move
+  ;; facts can be added to the session, the rules can be fired, and the
+  ;; board updated accordingly.
+  (let [new-move (facts/make-new-move 0 2 :nought)
+        new-state (-> state
+                    (rules/insert new-move)
+                    (rules/fire-rules))]
+    (graphics/board new-state)))
 
 ;; Mouse handlers
 
