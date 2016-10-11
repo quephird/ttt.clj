@@ -16,27 +16,28 @@
         session-with-board (apply rules/insert new-session new-board)]
     session-with-board))
 
-;; Wait for user input
-
 ;; Update game state
 (defn update [state]
   state)
 
+;; Get user input
 (defn mouse-clicked [state event]
-  (let [new-move (facts/make-new-move 0 2 :nought)
-        new-state (-> state
-                    (rules/insert new-move)
-                    (rules/fire-rules))]
-    new-state))
+  ;; TODO: Eventually need to check if it's the computer's turn
+  (let [x (quil/mouse-x)
+        y (quil/mouse-y)]
+    (if (and (> x 100) (< x 700) (> y 100) (< y 700))
+      (let [c (int (/ (- x 100) 200.0))
+            r (int (/ (- y 100) 200.0))q
+            new-move (facts/make-new-move c r :nought)
+            new-state (-> state
+                        (rules/insert new-move)
+                        (rules/fire-rules))]
+        new-state)
+        state)))
 
 ;; Draw current board
 (defn draw [state]
-  ;; This is not a permanent strategy; it is just to test that new Move
-  ;; facts can be added to the session, the rules can be fired, and the
-  ;; board updated accordingly.
   (graphics/board state))
-
-;; Mouse handlers
 
 (quil/sketch
   :title         "tic tac toe with quil and clara"
@@ -45,5 +46,4 @@
   :update        update
   :draw          draw
   :mouse-clicked mouse-clicked
-  :middleware    [m/fun-mode]
-  )
+  :middleware    [m/fun-mode])
