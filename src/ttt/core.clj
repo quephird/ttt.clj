@@ -11,7 +11,7 @@
   (quil/stroke-weight 10)
   (quil/ellipse-mode :center)
   (quil/no-fill)
-  (let [new-session (rules/mk-session 'ttt.facts 'ttt.graphics 'ttt.rules)
+  (let [new-session (rules/mk-session 'ttt.facts 'ttt.queries 'ttt.rules)
         new-board   (facts/make-new-board)
         session-with-board (apply rules/insert new-session new-board)]
     session-with-board))
@@ -27,7 +27,7 @@
         y (quil/mouse-y)]
     (if (and (> x 100) (< x 700) (> y 100) (< y 700))
       (let [c (int (/ (- x 100) 200.0))
-            r (int (/ (- y 100) 200.0))q
+            r (int (/ (- y 100) 200.0))
             new-move (facts/make-new-move c r :nought)
             new-state (-> state
                         (rules/insert new-move)

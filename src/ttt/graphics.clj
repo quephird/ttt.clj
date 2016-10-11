@@ -1,10 +1,7 @@
 (ns ttt.graphics
   (:require [clara.rules :as rules]
-            [quil.core :as quil])
-  (:import (ttt.facts Square)))
-
-(rules/defquery find-square [:?x :?y]
-  [?square <- Square (= ?x x) (= ?y y)])
+            [quil.core :as quil]
+            [ttt.queries :as queries]))
 
 (defn nought [x y]
   (quil/push-matrix)
@@ -22,7 +19,7 @@
   (quil/pop-matrix))
 
 (defn cell [state x y]
-  (let [{{:keys [x y occupied-by]} :?square} (first (rules/query state find-square :?x x :?y y))]
+  (let [{{:keys [x y occupied-by]} :?square} (queries/select-square state x y)]
     (case occupied-by
       :nought (nought x y)
       :cross (cross x y)
