@@ -8,3 +8,9 @@
 
 (defn select-square [state x y]
   (first (query state find-square :?x x :?y y)))
+
+(defn is-square-free? [state x y]
+  (-> (query state find-square :?x x :?y y)
+    first
+    (get-in [:?square :occupied-by])
+    (= :nobody)))

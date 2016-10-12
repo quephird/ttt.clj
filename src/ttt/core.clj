@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [ttt.facts :as facts]
             [ttt.graphics :as graphics]
+            [ttt.queries :as queries]
             [ttt.rules]))
 
 ;; Start game with blank board
@@ -23,17 +24,25 @@
 ;; Get user input
 (defn mouse-clicked [state event]
   ;; TODO: Eventually need to check if it's the computer's turn
+  ;; TODO: Need to move mouse handler into separate namespace
+  ;; TODO: Need to refactor this method bigtime
+  ;; TODO: Need to produce IllegalMove fact if the square is not free
   (let [x (quil/mouse-x)
         y (quil/mouse-y)]
     (if (and (> x 100) (< x 700) (> y 100) (< y 700))
       (let [c (int (/ (- x 100) 200.0))
             r (int (/ (- y 100) 200.0))
-            new-move (facts/make-new-move c r :nought)
-            new-state (-> state
-                        (rules/insert new-move)
-                        (rules/fire-rules))]
-        new-state)
-        state)))
+            is-free? (queries/is-square-free? state c r)]
+        (if is-free?
+          (let [new-move (facts/make-new-move c r :cross)
+                new-state (-> state
+                            (rules/insert new-move)
+                            (rules/fire-rules))]
+            new-state)
+          (do
+            (println "DOH... someone's already there!!!")
+            state)))
+      state)))
 
 ;; Draw current board
 (defn draw [state]
