@@ -2,19 +2,47 @@
   (:require [clara.rules :refer :all]
             [clara.rules.accumulators :as acc]
             [ttt.facts :as facts])
-  (:import  (ttt.facts Move Square)))
+  (:import  (ttt.facts MouseClick Move ValidMove Square)))
 
-(defrule apply-move
-  [?move <- Move
+(defrule validate-mouse-click
+  [?click <- MouseClick
     (= ?x x)
     (= ?y y)
     (= ?player player)]
+  [:test (and (> ?x 100) (< ?x 700) (> ?y 100) (< ?y 700))]
+  =>
+  (insert-unconditional!
+    (facts/->Move
+      (int (/ (- ?x 100) 200.0))
+      (int (/ (- ?y 100) 200.0))
+      ?player))
+  (retract! ?click))
+
+(defrule detect-invalid-move
+  [?move <- Move
+    (= ?c c)
+    (= ?r r)
+    (= ?player player)]
   [?square <- Square
-    (= ?x x)
-    (= ?y y)
+    (= ?c c)
+    (= ?r r)
+    (not= :nobody occupied-by)]
+  =>
+  (println "Invalid move!!!")
+  (insert-unconditional! (facts/->InvalidMove))
+  (retract! ?move))
+
+(defrule apply-valid-move
+  [?move <- Move
+    (= ?c c)
+    (= ?r r)
+    (= ?player player)]
+  [?square <- Square
+    (= ?c c)
+    (= ?r r)
     (= :nobody occupied-by)]
   =>
-  (insert-unconditional! (facts/->Square ?x ?y ?player))
+  (insert-unconditional! (facts/->Square ?c ?r ?player))
   (retract! ?square)
   (retract! ?move))
 

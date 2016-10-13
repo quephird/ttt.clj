@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [ttt.facts :as facts]
             [ttt.graphics :as graphics]
+            [ttt.queries :as queries]
             [ttt.rules]))
 
 ;; Start game with blank board
@@ -23,20 +24,18 @@
 ;; Get user input
 (defn mouse-clicked [state event]
   ;; TODO: Eventually need to check if it's the computer's turn
+  ;; TODO: Need to move mouse handler into separate namespace
   (let [x (quil/mouse-x)
-        y (quil/mouse-y)]
-    (if (and (> x 100) (< x 700) (> y 100) (< y 700))
-      (let [c (int (/ (- x 100) 200.0))
-            r (int (/ (- y 100) 200.0))
-            new-move (facts/make-new-move c r :nought)
-            new-state (-> state
-                        (rules/insert new-move)
-                        (rules/fire-rules))]
-        new-state)
-        state)))
+        y (quil/mouse-y)
+        new-move (facts/make-mouse-click x y :cross)
+        new-state (-> state
+                    (rules/insert new-move)
+                    (rules/fire-rules))]
+    new-state))
 
 ;; Draw current board
 (defn draw [state]
+  ;; TODO: Need to rename this method and "render" sounds here
   (graphics/board state))
 
 (quil/sketch
