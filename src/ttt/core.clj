@@ -25,27 +25,17 @@
 (defn mouse-clicked [state event]
   ;; TODO: Eventually need to check if it's the computer's turn
   ;; TODO: Need to move mouse handler into separate namespace
-  ;; TODO: Need to refactor this method bigtime
-  ;; TODO: Need to produce IllegalMove fact if the square is not free
   (let [x (quil/mouse-x)
-        y (quil/mouse-y)]
-    (if (and (> x 100) (< x 700) (> y 100) (< y 700))
-      (let [c (int (/ (- x 100) 200.0))
-            r (int (/ (- y 100) 200.0))
-            is-free? (queries/is-square-free? state c r)]
-        (if is-free?
-          (let [new-move (facts/make-new-move c r :cross)
-                new-state (-> state
-                            (rules/insert new-move)
-                            (rules/fire-rules))]
-            new-state)
-          (do
-            (println "DOH... someone's already there!!!")
-            state)))
-      state)))
+        y (quil/mouse-y)
+        new-move (facts/make-mouse-click x y :cross)
+        new-state (-> state
+                    (rules/insert new-move)
+                    (rules/fire-rules))]
+    new-state))
 
 ;; Draw current board
 (defn draw [state]
+  ;; TODO: Need to rename this method and "render" sounds here
   (graphics/board state))
 
 (quil/sketch
